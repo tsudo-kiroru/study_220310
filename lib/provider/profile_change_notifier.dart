@@ -14,13 +14,12 @@ class Profile {
 class ProfileChangeNotifier with ChangeNotifier {
   final LOGOUT_PROFILE = Profile(name: "ログインしてください", totalPost: 0);
   var _profile = Profile(name: "Sudo Takuya");
-  late var profile = _profile;
+  Profile get profile => isLogin ? _profile : LOGOUT_PROFILE;
   bool isLogin = true;
 
   void update(AuthChangeNotifier authChangeNotifier, PostChangeNotifier postChangeNotifier) {
     _profile.totalPost = postChangeNotifier.posts.length;
     isLogin = authChangeNotifier.authorized;
-    profile = isLogin ? _profile : LOGOUT_PROFILE;
     notifyListeners();
   }
 }
