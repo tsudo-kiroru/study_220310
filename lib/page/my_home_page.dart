@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:provider_sample/provider/count_store.dart';
+import 'package:provider_sample/provider/profile_change_notifier.dart';
+import 'package:provider_sample/provider/post_change_notifier.dart';
+import 'package:provider_sample/provider/auth_change_notifier.dart';
 import '../component/list_cell.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -17,10 +20,14 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
 
-    final count1 = context.select((Count1Store store) => store.count);
-    final count2 = context.select((Count2Store store) => store.count);
-    final count3 = context.select((Count3Store store) => store.count);
-    // final count4 = context.select((Count1Store store) => store.count);
+    final profile = context.select((ProfileChangeNotifier store) => store.profile);
+    final myPosts = context.select((PostChangeNotifier store) => store.posts);
+    final authorized = context.select((AuthChangeNotifier store) => store.authorized);
+    /*
+     * NOTE: trendPostsはmyPostsと全く同じものを参照します。
+     * もし同じ構造を持つ状態を作りたければTrendPostChangeNotifierというクラスを作るしかありません
+     */
+    // final trendPosts = context.select((PostChangeNotifier store) => store.posts);
 
     return Scaffold(
       appBar: AppBar(
@@ -31,39 +38,26 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             ListCell(
-              title: "count1: ${count1}",
-              buttonTitle: "count1を+1",
+              title: "${profile.name} - 投稿数: ${profile.totalPost}",
+              buttonTitle: "何もしません",
               handler: () {
-                context.read<Count1Store>().increament();
-                print("button1 tapped");
+                print("button tapped");
               }
             ),
             ListCell(
-              // title: "count2: ${count2}, count1が変化したら2倍して上書き",
-              title: "count2: ${count2}",
-              buttonTitle: "count2を+1",
+              title: "${myPosts.length == 0 ? 'ツイートなし' : myPosts[myPosts.length - 1]}",
+              buttonTitle: "投稿を増やす",
               handler: () {
-                context.read<Count2Store>().increament();
-                print("button2 tapped");
+                context.read<PostChangeNotifier>().add();
               }
             ),
             ListCell(
-              // title: "count3: ${count3}, count1or2が変化したら2つを合計",
-              title: "count3: ${count3}",
-              buttonTitle: "count3を+1",
+              title: "${authorized ? '認証済み' : '未認証'}",
+              buttonTitle: "認証状態をトグル",
               handler: () {
-                context.read<Count3Store>().increament();
-                print("button3 tapped");
+                context.read<AuthChangeNotifier>().toggle();
               }
             ),
-            // ListCell(
-            //   title: "count4: ${count4}",
-            //   buttonTitle: "count4を+1",
-            //   handler: () {
-            //     context.read<Count1Store>().increament();
-            //     print("button4 tapped");
-            //   }
-            // ),
           ],
         ),
       ),
