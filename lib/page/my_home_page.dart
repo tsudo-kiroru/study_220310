@@ -37,13 +37,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            ListCell(
-              title: "${profile.name} - 投稿数: ${profile.totalPost}",
-              buttonTitle: "何もしません",
-              handler: () {
-                print("button tapped");
-              }
-            ),
+            Text("${profile.name} - 投稿数: ${profile.totalPost}"),
             ListCell(
               title: "${myPosts.length == 0 ? 'ツイートなし' : myPosts[myPosts.length - 1]}",
               buttonTitle: "投稿を増やす",

@@ -3,9 +3,9 @@ import 'package:provider_sample/provider/auth_change_notifier.dart';
 import 'package:provider_sample/provider/post_change_notifier.dart';
 
 class Profile {
-  Profile({name, totalPost}) {
-    this.name = name;
-    this.totalPost = totalPost;
+  Profile({String? name, int? totalPost}) {
+    if (name != null) { this.name = name; }
+    if (totalPost != null) { this.totalPost = totalPost; }
   }
   String name = "Nickname";
   int totalPost = 0;

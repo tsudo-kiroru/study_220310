@@ -12,6 +12,7 @@ void main() {
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (context) => ProfileChangeNotifier()),
         ChangeNotifierProvider(create: (context) => PostChangeNotifier()),
         ChangeNotifierProvider(create: (context) => AuthChangeNotifier()),
         ChangeNotifierProxyProvider<AuthChangeNotifier, PostChangeNotifier>(
