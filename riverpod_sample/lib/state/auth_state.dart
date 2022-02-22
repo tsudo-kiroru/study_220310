@@ -5,11 +5,11 @@ final authStateProvider = StateNotifierProvider<AuthStateNotifier, bool>((ref) {
 });
 
 class AuthStateNotifier extends StateNotifier<bool> {
-  AuthStateNotifier(this.ref) : super(true);
+  AuthStateNotifier(this.ref) : super(false);
 
   final Ref ref;
 
-  void toggle() {
-    state = !state;
+  void updateAuthorize(bool isAuthorized) {
+    state = isAuthorized;
   }
 }
