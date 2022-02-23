@@ -4,7 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 List<String> remotePosts = <String>[];
 
 class PostRepository {
-  Future<List<String>> fetchPosts() async {
+  Future<List<String>> fetchMine() async {
     return remotePosts;
   }
 
