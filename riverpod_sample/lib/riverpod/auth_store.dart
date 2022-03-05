@@ -1,12 +1,12 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_sample/repositories/auth_repository.dart';
 
-final authViewModelProvider = StateNotifierProvider<AuthViewModel, bool>((ref) {
-  return AuthViewModel(ref);
+final authStore = StateNotifierProvider<AuthNotifier, bool>((ref) {
+  return AuthNotifier(ref);
 });
 
-class AuthViewModel extends StateNotifier<bool> {
-  AuthViewModel(this.ref) : super(false);
+class AuthNotifier extends StateNotifier<bool> {
+  AuthNotifier(this.ref) : super(false);
 
   final Ref ref;
 

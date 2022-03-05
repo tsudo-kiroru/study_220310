@@ -1,22 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_sample/components/list_cell.dart';
-import 'package:riverpod_sample/viewmodel/auth_viewmodel.dart';
-import 'package:riverpod_sample/viewmodel/profile_viewmodel.dart';
-import 'package:riverpod_sample/viewmodel/post_viewmodel.dart';
+import 'package:riverpod_sample/riverpod/auth_store.dart';
+import 'package:riverpod_sample/riverpod/profile_store.dart';
+import 'package:riverpod_sample/riverpod/post_store.dart';
+import 'package:riverpod_sample/pages/my_home_viewmodel.dart';
 
 class MyHomePage extends HookConsumerWidget {
   const MyHomePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final auth = ref.watch(authViewModelProvider);
-    final authViewModel = ref.read(authViewModelProvider.notifier);
-    final profile = ref.watch(profileViewModelProvider.select((value) => value.profile));
-    print(profile);
-    final profileViewModel = ref.read(profileViewModelProvider);
-    final myPosts = ref.watch(myPostViewModelProvider);
-    final myPostsViewModel = ref.read(myPostViewModelProvider.notifier);
+    final viewModel = MyHomeViewModel(ref);
 
     return Scaffold(
       appBar: AppBar(
@@ -26,28 +21,22 @@ class MyHomePage extends HookConsumerWidget {
         Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(profileViewModel.introduction),
+            Text(viewModel.profileIntroduction),
             ListCell(
-              title: myPosts.isEmpty ? '投稿なし' : myPosts.last,
-              buttonTitle: auth ? '投稿を増やす' : '会員だけが投稿できます',
+              title: viewModel.myPosts.isEmpty ? '投稿なし' : viewModel.myPosts.last,
+              buttonTitle: viewModel.auth ? '投稿を増やす' : '会員だけが投稿できます',
               handler: () {
-                if (!auth) return;
-                myPostsViewModel.add("投稿:No${myPosts.length + 1}");
+                viewModel.addPost();
               }
             ),
             ListCell(
-              title: auth ? '認証済み' : '未認証',
-              buttonTitle: auth ? 'ログアウト' : 'ログイン',
+              title: viewModel.auth ? '認証済み' : '未認証',
+              buttonTitle: viewModel.auth ? 'ログアウト' : 'ログイン',
               handler: () async {
-                if (!auth) {
-                  await authViewModel.login();
-                  // ログイン後にプロフィールと投稿を取得（並列実行）
-                  await Future.wait([
-                    profileViewModel.fetch(),
-                    myPostsViewModel.fetch(),
-                  ]);
+                if (!viewModel.auth) {
+                  viewModel.login();
                 } else {
-                  await authViewModel.logout();
+                  viewModel.logout();
                 }
               },
             ),
