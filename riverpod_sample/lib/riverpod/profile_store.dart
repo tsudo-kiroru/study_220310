@@ -1,18 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:riverpod_sample/viewmodel/auth_viewmodel.dart';
-import 'package:riverpod_sample/viewmodel/post_viewmodel.dart';
+import 'package:riverpod_sample/riverpod/auth_store.dart';
+import 'package:riverpod_sample/riverpod/post_store.dart';
 import 'package:riverpod_sample/models/profile_model.dart';
 import 'package:riverpod_sample/repositories/profile_repository.dart';
 
-final profileViewModelProvider = ChangeNotifierProvider((ref) => ProfileViewModel(ref));
+final profileStore = ChangeNotifierProvider((ref) => ProfileNotifier(ref));
 
-class ProfileViewModel extends ChangeNotifier {
+class ProfileNotifier extends ChangeNotifier {
   final Ref ref;
   ProfileModel? profile;
 
-  ProfileViewModel(this.ref) : super() {
-    ref.listen(authViewModelProvider, (previous, next) async {
+  ProfileNotifier(this.ref) : super() {
+    ref.listen(authStore, (previous, next) async {
       final authorized = next as bool?;
       if (authorized == null) { return; }
       // ログアウトしたらプロフィールをクリア
@@ -22,7 +22,7 @@ class ProfileViewModel extends ChangeNotifier {
       }
     });
 
-    ref.listen(myPostViewModelProvider, (previous, next) { 
+    ref.listen(myPostStore, (previous, next) { 
       if (profile == null) { return; }
       final posts = next as List<String>?;
       if (posts == null) { return; }
