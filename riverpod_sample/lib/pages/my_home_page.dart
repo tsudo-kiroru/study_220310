@@ -4,14 +4,18 @@ import 'package:riverpod_sample/components/list_cell.dart';
 import 'package:riverpod_sample/riverpod/auth_store.dart';
 import 'package:riverpod_sample/riverpod/profile_store.dart';
 import 'package:riverpod_sample/riverpod/post_store.dart';
-import 'package:riverpod_sample/pages/my_home_viewmodel.dart';
 
 class MyHomePage extends HookConsumerWidget {
   const MyHomePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final viewModel = MyHomeViewModel(ref);
+    final auth = ref.watch(authStore);
+    final authNotifier = ref.read(authStore.notifier);
+    final profile = ref.watch(profileStore.select((value) => value.profile));
+    final profileNotifier = ref.read(profileStore);
+    final myPosts = ref.watch(myPostStore);
+    final myPostsNotifier = ref.read(myPostStore.notifier);
 
     return Scaffold(
       appBar: AppBar(
@@ -21,22 +25,28 @@ class MyHomePage extends HookConsumerWidget {
         Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(viewModel.profileIntroduction),
+            Text(profileNotifier.introduction),
             ListCell(
-              title: viewModel.myPosts.isEmpty ? '投稿なし' : viewModel.myPosts.last,
-              buttonTitle: viewModel.auth ? '投稿を増やす' : '会員だけが投稿できます',
+              title: myPosts.isEmpty ? '投稿なし' : myPosts.last,
+              buttonTitle: auth ? '投稿を増やす' : '会員だけが投稿できます',
               handler: () {
-                viewModel.addPost();
+                if (!auth) return;
+                myPostsNotifier.add("投稿:No${myPosts.length + 1}");
               }
             ),
             ListCell(
-              title: viewModel.auth ? '認証済み' : '未認証',
-              buttonTitle: viewModel.auth ? 'ログアウト' : 'ログイン',
+              title: auth ? '認証済み' : '未認証',
+              buttonTitle: auth ? 'ログアウト' : 'ログイン',
               handler: () async {
-                if (!viewModel.auth) {
-                  viewModel.login();
+                if (!auth) {
+                  await authNotifier.login();
+                  // ログイン後にプロフィールと投稿を取得（並列実行）
+                  await Future.wait([
+                    profileNotifier.fetch(),
+                    myPostsNotifier.fetch(),
+                  ]);
                 } else {
-                  viewModel.logout();
+                  await authNotifier.logout();
                 }
               },
             ),
